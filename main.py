@@ -1,5 +1,6 @@
 import requests
 from tqdm import *
+import csv
 headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:76.0) Gecko/20100101 Firefox/76.0',
            'Accept': 'application/json, text/javascript, */*; q=0.01'}
 
@@ -44,8 +45,6 @@ with tqdm(total=pages // 10000 + 1) as pbar:
             base.append(current)
         pbar.update()
 print('Done')
-header = ['Название школы', 'Директор', 'Адрес', 'Тип населенного пункта', 'Телефон', 'Сайт', 'Email', 'Источник']
-import csv
 with open('base.csv', 'w') as f:
     w = csv.writer(f)
     w.writerows(base)
