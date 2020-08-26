@@ -2,6 +2,7 @@
 import requests
 from tqdm import *
 import csv
+
 headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:76.0) Gecko/20100101 Firefox/76.0',
            'Accept': 'application/json, text/javascript, */*; q=0.01'}
 
@@ -13,6 +14,7 @@ json_ = requests.get(start_url, headers=headers)
 data = json_.json()
 pages = int(json_.json()['pageCount'])
 base = [['Название школы', 'Директор', 'Адрес', 'Тип населенного пункта', 'Телефон', 'Сайт', 'Email', 'Источник']]
+print('Staring parse...')
 with tqdm(total=pages // 10000 + 1) as pbar:
     for i in range(1, pages // 10000 + 2):
         url = f'https://russiaedu.ru/_ajax/schools?edu_school_filter%5BschoolName%5D=&edu_school_filter%5Bregion%' \
@@ -45,7 +47,7 @@ with tqdm(total=pages // 10000 + 1) as pbar:
             current.append(data['link'])
             base.append(current)
         pbar.update()
-print('Done')
+print('Done!')
 with open('base.csv', 'w') as f:
     w = csv.writer(f)
     w.writerows(base)
