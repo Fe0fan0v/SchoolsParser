@@ -1,3 +1,4 @@
+#!/usr/bin/python
 import requests
 from tqdm import *
 import csv
