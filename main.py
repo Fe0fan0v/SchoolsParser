@@ -45,7 +45,6 @@ if __name__ == '__main__':
                       f'searchString=%D1%88%D0%BA%D0%BE%D0%BB%D0%B0&searchTermCondition=or'
                 json_to_parse = requests.get(url, headers=headers).json()
                 base.append(writing_raw(json_to_parse['agencies'], reg, str(id[0])))
-                print(writing_raw(json_to_parse['agencies'], reg, str(id[0])))
             pbar.update()
             print()
             print(base)
