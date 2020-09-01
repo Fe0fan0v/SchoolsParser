@@ -17,13 +17,16 @@ with open('regions.json', 'r', encoding='utf-8') as fh:
     data = json.load(fh)
 
 
-def writing_raw(current_pages, region, id):
+def writing_raw(current_pages, region):
     for page in current_pages:
         page_url = f'https://bus.gov.ru/public/agency/agency.json?agency={page["agencyId"]}'
         json_ = requests.get(page_url, headers=headers).json()
         name = page['shortName'].strip()
         address = page['fullAddress'].strip()
-        loc_type = f"{json_['publicInfo']['ppo']['settlementType']}"
+        try:
+            loc_type = f"{json_['publicInfo']['ppo']['settlementType']}"
+        except:
+            loc_type = None
         region = region
         phone = page['phone'].strip()
         site = page['website'].strip()
@@ -44,10 +47,9 @@ if __name__ == '__main__':
                       f'orderDirectionASC=false&pageSize=10&regionId={id[0]}&regions={id[0]}&' \
                       f'searchString=%D1%88%D0%BA%D0%BE%D0%BB%D0%B0&searchTermCondition=or'
                 json_to_parse = requests.get(url, headers=headers).json()
-                base.append(writing_raw(json_to_parse['agencies'], reg, str(id[0])))
+                base.append(writing_raw(json_to_parse['agencies'], reg))
             pbar.update()
             print()
-            print(base)
     with open('base.csv', 'w') as f:
         w = csv.writer(f)
         w.writerows(base)
