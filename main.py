@@ -19,7 +19,7 @@ with open('regions.json', 'r', encoding='utf-8') as fh:
 
 def writing_raw(current_pages, region, id):
     for page in current_pages:
-        page_url = f'https://bus.gov.ru/public/agency/agency.json?agency={id}'
+        page_url = f'https://bus.gov.ru/public/agency/agency.json?agency={page["agencyId"]}'
         json_ = requests.get(page_url, headers=headers).json()
         name = page['shortName'].strip()
         address = page['fullAddress'].strip()
@@ -41,16 +41,14 @@ if __name__ == '__main__':
             print(f'Working at {reg}...')
             for i in range(1, (int(id[1]) + 1) // 30 + 1):
                 url = f'https://bus.gov.ru/public-rest/api/agency/search/init?d-442831-p={i}&orderAttributeName=rank&' \
-                      f'orderDirectionASC=false&pageSize=30&regionId={str(id[0])}&regions={str(id[0])}&' \
-                      f'searchString=школа&searchTermCondition=or'
-                try:
-                    json_to_parse = requests.get(url, headers=headers)
-                    base.append(writing_raw(json_to_parse.json()['agencies'], reg, str(id[0])))
-                except:
-                    continue
+                      f'orderDirectionASC=false&pageSize=10&regionId={id[0]}&regions={id[0]}&' \
+                      f'searchString=%D1%88%D0%BA%D0%BE%D0%BB%D0%B0&searchTermCondition=or'
+                json_to_parse = requests.get(url, headers=headers).json()
+                base.append(writing_raw(json_to_parse['agencies'], reg, str(id[0])))
+                print(writing_raw(json_to_parse['agencies'], reg, str(id[0])))
             pbar.update()
             print()
-
+            print(base)
     with open('base.csv', 'w') as f:
         w = csv.writer(f)
         w.writerows(base)
