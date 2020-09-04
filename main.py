@@ -34,7 +34,8 @@ def writing_raw(current_pages, region):
         director = f"{json_['agency']['managerSecondName']} " \
                    f"{json_['agency']['managerFirstName']} {json_['agency']['managerMiddleName']}"
         email = f"{json_['agency']['email']}"
-        return [name, director, address, loc_type, region, phone, site, email, link]
+        sublist = [name, director, address, loc_type, region, phone, site, email, link]
+        base.append(sublist)
 
 
 if __name__ == '__main__':
@@ -48,7 +49,7 @@ if __name__ == '__main__':
                           f'orderDirectionASC=false&pageSize=30&regionId={id[0]}&regions={id[0]}&' \
                           f'searchString=%D1%88%D0%BA%D0%BE%D0%BB%D0%B0&searchTermCondition=or'
                     json_to_parse = requests.get(url, headers=headers).json()
-                    base.append(writing_raw(json_to_parse['agencies'], reg))
+                    writing_raw(json_to_parse['agencies'], reg)
                 except:
                     pass
             pbar.update()
