@@ -43,11 +43,14 @@ if __name__ == '__main__':
         for reg, id in data.items():
             print(f'Working at {reg}...')
             for i in range(1, int(id[1]) // 30 + 2):
-                url = f'https://bus.gov.ru/public-rest/api/agency/search/init?d-442831-p={i}&orderAttributeName=rank&' \
-                      f'orderDirectionASC=false&pageSize=30&regionId={id[0]}&regions={id[0]}&' \
-                      f'searchString=%D1%88%D0%BA%D0%BE%D0%BB%D0%B0&searchTermCondition=or'
-                json_to_parse = requests.get(url, headers=headers).json()
-                base.append(writing_raw(json_to_parse['agencies'], reg))
+                try:
+                    url = f'https://bus.gov.ru/public-rest/api/agency/search/init?d-442831-p={i}&orderAttributeName=rank&' \
+                          f'orderDirectionASC=false&pageSize=30&regionId={id[0]}&regions={id[0]}&' \
+                          f'searchString=%D1%88%D0%BA%D0%BE%D0%BB%D0%B0&searchTermCondition=or'
+                    json_to_parse = requests.get(url, headers=headers).json()
+                    base.append(writing_raw(json_to_parse['agencies'], reg))
+                except:
+                    pass
             pbar.update()
             print()
     with open('base.csv', 'w') as f:
