@@ -44,7 +44,7 @@ if __name__ == '__main__':
             print(f'Working at {reg}...')
             for i in range(1, (int(id[1]) + 1) // 30 + 1):
                 url = f'https://bus.gov.ru/public-rest/api/agency/search/init?d-442831-p={i}&orderAttributeName=rank&' \
-                      f'orderDirectionASC=false&pageSize=10&regionId={id[0]}&regions={id[0]}&' \
+                      f'orderDirectionASC=false&pageSize=30&regionId={id[0]}&regions={id[0]}&' \
                       f'searchString=%D1%88%D0%BA%D0%BE%D0%BB%D0%B0&searchTermCondition=or'
                 json_to_parse = requests.get(url, headers=headers).json()
                 base.append(writing_raw(json_to_parse['agencies'], reg))
