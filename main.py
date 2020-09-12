@@ -7,7 +7,8 @@ import csv
 
 HEADERS = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:76.0) Gecko/20100101 Firefox/76.0',
            'Accept': 'application/json, text/javascript, */*; q=0.01'}
-base = []
+base = [['Наименование', 'Директор', 'Адрес', 'Тип населённого пункта',
+         'Регион', 'Телефон', 'Сайт', 'E-mail', 'Источник']]
 with open('regions.json', 'r', encoding='utf-8') as fh:
     DATA = json.load(fh)
 
