@@ -14,12 +14,9 @@ with open('regions.json', 'r', encoding='utf-8') as fh:
 
 
 def writing_raw(pages, region):
-    pages_list = []
-    for page in pages:
-        pages_list.append(f'https://bus.gov.ru/public/agency/agency.json?agency={page["agencyId"]}')
+    pages_list = [f'https://bus.gov.ru/public/agency/agency.json?agency={page}' for page in pages]
     jsons = (grequests.get(page_url) for page_url in pages_list)
-    lst = grequests.map(jsons)
-    for i in lst:
+    for i in list(filter(lambda x: x.status_code == 200, grequests.map(jsons))):
         i = i.json()
         try:
             name = i['agency']['shortClientName'].strip()
@@ -30,7 +27,6 @@ def writing_raw(pages, region):
             loc_type = f"{i['publicInfo']['ppo']['settlementType']}"
         except:
             loc_type = None
-        region = region
         try:
             phone = i['agency']['phone'].strip()
         except:
@@ -55,25 +51,33 @@ def writing_raw(pages, region):
             email = f"{i['agency']['email']}"
         except:
             email = f"{i['agency']['branch']['headAgency']['email']}"
-
         base.append([name, director, address, loc_type, region, phone, site, email, link])
+
+
+def get_info(region, data=DATA):
+    print(f'Working at {region}...')
+    region_pages = [f'https://bus.gov.ru/public-rest/api/agency/search/init?d-442831-p={j}&'
+                    f'orderAttributeName=rank&orderDirectionASC=false&pageSize=30&regionId={data[region][0]}&'
+                    f'regions={data[region][0]}&searchString=%D1%88%D0%BA%D0%BE%D0%BB%D0%B0&searchTermCondition=or'
+                    for j in range(1, int(data[region][1]) // 30 + 2)]
+
+    outer_jsons = (grequests.get(page_url) for page_url in region_pages)
+    outer_lst = grequests.map(outer_jsons)
+    id_list = []
+    for i in [y['agencies'] for y in [x.json() for x in outer_lst]]:
+        for j in i:
+            id_list.append(j["agencyId"])
+    writing_raw(id_list, region)
+    print(f'Region {region} id done...')
 
 
 print('Staring parse...')
 with tqdm(total=len(DATA)) as pbar:
     for reg, region_list in DATA.items():
-        print(f'Working at {reg}...')
-        for j in range(1, int(region_list[1]) // 100 + 2):
-            req_url = f'https://bus.gov.ru/public-rest/api/agency/search/init?d-442831-p={j}&' \
-                      f'orderAttributeName=rank&orderDirectionASC=false&pageSize=100&regionId={region_list[0]}&' \
-                      f'regions={region_list[0]}&searchString=%D1%88%D0%BA%D0%BE%D0%BB%D0%B0&searchTermCondition=or'
-            try:
-                json_to_parse = requests.get(req_url, headers=HEADERS).json()
-                writing_raw(json_to_parse['agencies'], reg)
-            except:
-                continue
+        map(get_info(reg), DATA)
         pbar.update()
         print()
+
 with open('base.csv', 'w') as f:
     w = csv.writer(f)
     w.writerows(base)
